@@ -274,3 +274,6 @@ GitHub: https://github.com/khaosduke
 ## License
 
 MIT
+
+NOTES
+Now requires, kysely, kysely-ctl as a dep

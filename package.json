@@ -9,6 +9,7 @@
     "aes-js": "^3.1.2",
     "eas-cli": "^0.0.0",
     "expo": "~56.0.12",
+    "expo-build-properties": "~56.0.19",
     "expo-constants": "^56.0.14",
     "expo-dev-client": "~56.0.20",
     "expo-device": "~56.0.4",
@@ -24,7 +25,6 @@
     "expo-system-ui": "^56.0.5",
     "expo-web-browser": "~56.0.5",
     "kysely": "^0.29.2",
-    "kysely-supabase": "^0.2.1",
     "pg": "^8.22.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -41,6 +41,8 @@
   "devDependencies": {
     "@types/aes-js": "^3.1.4",
     "@types/react": "~19.2.2",
+    "kysely-ctl": "^0.21.0",
+    "kysely-supabase": "^0.2.1",
     "typescript": "~6.0.3"
   },
   "scripts": {

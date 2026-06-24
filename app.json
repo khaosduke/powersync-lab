@@ -37,11 +37,20 @@
           }
         }
       ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "17.0"
+          }
+        }
+      ],
       "expo-font",
       "expo-status-bar",
       "expo-web-browser",
       "expo-secure-store",
-      "expo-image"
+      "expo-image",
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true,
