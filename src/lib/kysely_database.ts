@@ -1,21 +1,21 @@
-//import { Database } from './types.ts' // this is the Database interface we defined earlier
-import { Kysely, PostgresDialect } from 'kysely'
-import { Pool } from 'pg'
+import dotenv from "dotenv"
+import "dotenv/config"
+import { Kysely, PostgresDialect } from "kysely"
+import pg from "pg"
+import { Database } from "../../supabase/generated/db_types"
 
-const dialect = new PostgresDialect({
-  pool: new Pool({
-    database: 'postgres',
-    host: '127.0.0.1',
-    user: 'postgres',
-    port: 5432,
-    max: 10,
-  })
+dotenv.config({
+  path: ".env.development.local",
 })
 
-// Database interface is passed to Kysely's constructor, and from now on, Kysely 
-// knows your database structure.
-// Dialect is passed to Kysely's constructor, and from now on, Kysely knows how 
-// to communicate with your database.
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set")
+}
+
 export const db = new Kysely<Database>({
-  dialect,
+  dialect: new PostgresDialect({
+    pool: new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+    }),
+  }),
 })
