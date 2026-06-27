@@ -34,6 +34,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      kysely_migration: {
+        Row: {
+          name: string
+          timestamp: string
+        }
+        Insert: {
+          name: string
+          timestamp: string
+        }
+        Update: {
+          name?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      kysely_migration_lock: {
+        Row: {
+          id: string
+          is_locked: number
+        }
+        Insert: {
+          id: string
+          is_locked?: number
+        }
+        Update: {
+          id?: string
+          is_locked?: number
+        }
+        Relationships: []
+      }
       lists: {
         Row: {
           created_at: string
