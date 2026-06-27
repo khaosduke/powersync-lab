@@ -277,3 +277,5 @@ MIT
 
 NOTES
 Now requires, kysely, kysely-ctl as a dep
+
+For database kysely owns migrations and seeds. 
