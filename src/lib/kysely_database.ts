@@ -4,6 +4,7 @@ import { Kysely, PostgresDialect } from "kysely"
 import pg from "pg"
 import { Database } from "../../supabase/generated/db_types"
 
+//Ensure supabase session pooler DB URL is used, throws an error if it's not found
 dotenv.config({
   path: ".env.development.local",
 })

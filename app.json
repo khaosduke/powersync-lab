@@ -19,7 +19,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.khaosduke.expo-zustand-auth"
+      "package": "com.khaosduke.powersync_lab"
     },
     "web": {
       "output": "static",
