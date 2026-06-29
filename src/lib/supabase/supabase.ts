@@ -1,6 +1,6 @@
 
 import { createClient } from "@supabase/supabase-js";
-import { LargeSecureStore } from "./secure_store";
+import { LargeSecureStore } from "../secure_store";
 
 import 'react-native-get-random-values';
 

@@ -1,0 +1,19 @@
+import { Schema, Table, column } from '@powersync/react-native';
+
+export const TODOS_TABLE = 'todos'
+export const LISTS_TABLE = 'lists'
+
+const todos = new Table({
+    description: column.text,
+    completed: column.integer,
+    completed_by: column.text,
+    created_by: column.text,
+    list_id: column.text
+});
+
+export const AppSchema = new Schema({
+    todos,
+});
+
+export type Database = (typeof AppSchema)['types'];
+export type Todo = Database['todos'];

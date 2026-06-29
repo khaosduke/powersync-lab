@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase/supabase'
 import { appStyles } from '../styles/styles'
 
 export default function EmailAuth() {

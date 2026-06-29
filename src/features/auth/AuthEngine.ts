@@ -1,5 +1,5 @@
 // src/features/auth/AuthEngine.ts
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase/supabase'
 import { useAuthStore } from './AuthStore'
 
 /**
