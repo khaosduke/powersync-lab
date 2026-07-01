@@ -11,9 +11,16 @@ const todos = new Table({
     list_id: column.text
 });
 
+const lists = new Table({
+  name: column.text,
+  owner_id: column.text,
+});
+
 export const AppSchema = new Schema({
     todos,
+    lists,
 });
 
 export type Database = (typeof AppSchema)['types'];
 export type Todo = Database['todos'];
+export type List = Database['lists'];
