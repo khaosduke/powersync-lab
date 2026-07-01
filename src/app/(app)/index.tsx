@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#151515',
     padding: 6,
     alignItems: 'center',
+    marginTop: 100,
   },
   input: {
     flex: 1,
