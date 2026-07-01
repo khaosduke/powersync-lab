@@ -1,7 +1,7 @@
 import { Schema, Table, column } from '@powersync/react-native';
 
 export const TODOS_TABLE = 'todos' as const
-export const LISTS_TABLE = 'lists'
+export const LISTS_TABLE = 'lists' as const
 
 const todos = new Table({
     description: column.text,
