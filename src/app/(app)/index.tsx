@@ -14,6 +14,8 @@ import {
     View
 } from 'react-native';
 
+import SignOutButton from '@/components/SignOutButton';
+
 //The todos index
 export default function Index() {
     
@@ -87,6 +89,7 @@ export default function Index() {
             <TouchableOpacity onPress={addTodo} disabled={description === ''}>
               <Ionicons name="add-outline" size={24} color="#A700FF" />
             </TouchableOpacity>
+            <SignOutButton />   
           </View>
     
           {todos && (
