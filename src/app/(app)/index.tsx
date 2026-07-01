@@ -22,8 +22,45 @@ export default function Index() {
     const [description, setDescription] = useState('');
     const { supabaseConnector, db } = useSystem();
     const [todos, setTodos] = useState<Todo[]>([]);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [activeListId, setActiveListId] = useState<string | null>(null);
     
+    
+
+    async function getOrCreateDefaultList(userID: string) {
+        const existing = await db
+            .selectFrom("lists")
+            .selectAll()
+            .where("owner_id", "=", userID)
+            .limit(1)
+            .executeTakeFirst();
+
+        if (existing) return existing.id;
+
+        const listId = uuid() as string;
+
+        await db
+            .insertInto("lists")
+            .values({
+            id: listId,
+            name: "Default",
+            owner_id: userID,
+            })
+            .execute();
+
+        return listId;
+    }
+
+    
+
     useEffect(() => {
+        async function initLists() {
+            const { userID }= await supabaseConnector.fetchCredentials();
+            setUserId(userID);
+            const activeListId = await getOrCreateDefaultList(userID);
+            setActiveListId(activeListId);
+        }
+        initLists();
         loadTodos();
     }, []);
     
@@ -33,13 +70,12 @@ export default function Index() {
     };
 
     const addTodo = async () => {
-        const { userID } = await supabaseConnector.fetchCredentials();
         const todoId = uuid();
 
         await db
             .insertInto(TODOS_TABLE)
-            .values({ id: todoId, description, created_by: userID, completed: 0 })
-            .execute();
+            .values({ id: todoId, description, list_id: activeListId, created_by: userId, completed: 0 })
+        .execute();
 
         setDescription('');
         loadTodos();
