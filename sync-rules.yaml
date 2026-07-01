@@ -3,4 +3,4 @@ bucket_definitions:
     # Select parameters for the bucket, using the current user_id
     parameters: SELECT token_parameters.user_id as user_id
     data:
-      - select * from todos where user_id = bucket.user_id
+      - select * from todos where created_by = bucket.user_id
