@@ -6,6 +6,7 @@ import { SplashScreenController } from '@/components/SplashScreen'
 import { useAuthStore } from '@/features/auth/AuthStore'
 import AuthProvider from '@/providers/AuthProvider'
 import { useColorScheme } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 // Separate RootNavigator so we can access the AuthContext
 function RootNavigator() {
@@ -39,8 +40,10 @@ export default function RootLayout() {
   return (
     <AuthProvider>
         <SplashScreenController />
-        <RootNavigator />
-        <StatusBar style="auto" />
+        <GestureHandlerRootView>
+          <RootNavigator />
+          <StatusBar style="auto" />
+        </GestureHandlerRootView>
     </AuthProvider>
     
   )
