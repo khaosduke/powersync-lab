@@ -1,24 +1,26 @@
 import { wrapPowerSyncWithKysely } from "@powersync/kysely-driver";
+import { OPSqliteOpenFactory } from "@powersync/op-sqlite";
 import { PowerSyncDatabase } from "@powersync/react-native";
+import { Kysely } from "kysely";
 import { createContext, useContext } from "react";
-import { AppSchema } from './powersync_app_schema';
+import { AppSchema, Database } from './powersync_app_schema';
 import { SupabaseConnector } from "./powersync_supabase_connector";
 
 export class System {
     supabaseConnector: SupabaseConnector;
     powersync: PowerSyncDatabase;
-    db: ReturnType<typeof wrapPowerSyncWithKysely>;
+    db: Kysely<Database>;;
 
     constructor() {
         this.powersync = new PowerSyncDatabase({
             schema: AppSchema,
-            database: {
-                dbFilename: 'app.sqlite',
-            }
+            database: new OPSqliteOpenFactory({
+                dbFilename: "app.sqlite",
+            }),
         })
 
         this.supabaseConnector = new SupabaseConnector();
-        this.db = wrapPowerSyncWithKysely(this.powersync)
+        this.db = wrapPowerSyncWithKysely(this.powersync) as unknown as Kysely<Database>;
     }
 
     async init() {

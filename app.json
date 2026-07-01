@@ -50,7 +50,7 @@
       "expo-web-browser",
       "expo-secure-store",
       "expo-image",
-      "expo-build-properties"
+      "expo-build-properties",
     ],
     "experiments": {
       "typedRoutes": true,

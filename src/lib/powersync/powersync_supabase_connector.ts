@@ -22,14 +22,14 @@ const FATAL_RESPONSE_CODES = [
 ];
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
+const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY as string;
 const powersyncUrl = process.env.EXPO_PUBLIC_POWERSYNC_URL as string;
 
 export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
 
   constructor() {
-    this.client = createClient(supabaseUrl, supabaseAnonKey, {
+    this.client = createClient(supabaseUrl, supabaseKey, {
       auth: {
         storage: AsyncStorage,
       },
