@@ -7,6 +7,9 @@ import { useAuthStore } from '@/features/auth/AuthStore'
 import AuthProvider from '@/providers/AuthProvider'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+//TODO: Ensure splash screen has a timeout and is hidden when the app is ready to render. Currently, the splash screen is hidden too early, causing a flash of white before the app renders.
+//TODO: If the timeout has been reached, show an error, in other words, the splash screen was there for say 30 seconds 
+
 
 // Separate RootNavigator so we can access the AuthContext
 function RootNavigator() {
