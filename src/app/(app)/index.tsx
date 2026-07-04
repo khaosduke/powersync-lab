@@ -1,31 +1,35 @@
+import SignOutButton from '@/components/SignOutButton';
 import AppleStyleSwipeableRow from '@/components/SwipeableRow';
-import { Todo, TODOS_TABLE } from '@/lib/powersync/powersync_app_schema';
+import { Todo, useTodoStore } from '@/features/todos/TodoStore';
 import { useSystem } from '@/lib/powersync/powersync_system';
 import { uuid } from '@/lib/powersync/powersync_uuid';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import {
-    FlatList,
-    ListRenderItem,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  FlatList,
+  ListRenderItem,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
-import SignOutButton from '@/components/SignOutButton';
 
 //The todos index
 export default function Index() {
-    
     const [description, setDescription] = useState('');
-    const { supabaseConnector, db } = useSystem();
-    const [todos, setTodos] = useState<Todo[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
     const [activeListId, setActiveListId] = useState<string | null>(null);
-    
-    
+
+    const { supabaseConnector, db } = useSystem();
+
+    const todos = useTodoStore((s) => s.todos);
+    const loadTodos = useTodoStore((s) => s.loadTodos);
+    const addTodoToStore = useTodoStore((s) => s.addTodo);
+    const toggleTodo = useTodoStore((s) => s.toggleTodo);
+    const deleteTodoById = useTodoStore((s) => s.deleteTodo);
+
 
     async function getOrCreateDefaultList(userID: string) {
         const existing = await db
@@ -51,66 +55,46 @@ export default function Index() {
         return listId;
     }
 
-    
-
     useEffect(() => {
-        async function initLists() {
-            const { userID }= await supabaseConnector.fetchCredentials();
-            setUserId(userID);
-            const activeListId = await getOrCreateDefaultList(userID);
-            setActiveListId(activeListId);
-        }
-        initLists();
-        loadTodos();
-    }, []);
-    
-    const loadTodos = async () => {
-        const result = await db.selectFrom(TODOS_TABLE).selectAll().execute();
-        setTodos(result);
-    };
-
+        async function init() {
+        const { userID } = await supabaseConnector.fetchCredentials();
+        setUserId(userID);
+        const listId = await getOrCreateDefaultList(userID);
+        setActiveListId(listId);
+        await loadTodos();
+      }
+      init();
+  }, []);
+  
     const addTodo = async () => {
-        const todoId = uuid();
+      if (!description.trim()) return;
+      if (!userId || !activeListId) return;
 
-        await db
-            .insertInto(TODOS_TABLE)
-            .values({ id: todoId, description, list_id: activeListId, created_by: userId, completed: 0 })
-        .execute();
+      await addTodoToStore(description, userId, activeListId);
 
-        setDescription('');
-        loadTodos();
+      setDescription('');
     };
 
-    const updateTodo = async (todo: Todo) => {
-        await db
-            .updateTable(TODOS_TABLE)
-            .where('id', '=', todo.id)
-            .set({ completed: todo.completed === 1 ? 0 : 1 })
-            .execute();
-        loadTodos();
-    };
-    
-    const deleteTodo = async (todo: Todo) => {
-        const result = await db.deleteFrom(TODOS_TABLE).where('id', '=', todo.id).execute();
-        loadTodos();
-    };
 
-    const renderRow: ListRenderItem<any> = ({ item }) => {
-    return (
+
+
+    const renderRow: ListRenderItem<Todo> = ({ item }) => {
+      return (
         <AppleStyleSwipeableRow
-        onDelete={() => deleteTodo(item)}
-        onToggle={() => updateTodo(item)}
-        todo={item}>
-        <View style={{ padding: 12, flexDirection: 'row', gap: 10, height: 44 }}>
+          onDelete={() => deleteTodoById(item.id)}
+          onToggle={() => toggleTodo(item.id)}
+          todo={item}
+        >
+          <View style={{ padding: 12, flexDirection: 'row', gap: 10, height: 44 }}>
             <Text style={{ flex: 1 }}>{item.description}</Text>
+
             {item.completed === 1 && (
-            <Ionicons name="checkmark-done-outline" size={24} color="#00d5ff" />
+              <Ionicons name="checkmark-done-outline" size={24} color="#00d5ff" />
             )}
-        </View>
+          </View>
         </AppleStyleSwipeableRow>
-        );
+      );
     };
-    
     
     
     return (
@@ -122,23 +106,27 @@ export default function Index() {
               value={description}
               onChangeText={setDescription}
             />
+    
             <TouchableOpacity onPress={addTodo} disabled={description === ''}>
               <Ionicons name="add-outline" size={24} color="#A700FF" />
             </TouchableOpacity>
-            <SignOutButton />   
+    
+            <SignOutButton />
           </View>
     
-          {todos && (
-            <FlatList
-              data={todos}
-              renderItem={renderRow}
-              ItemSeparatorComponent={() => (
-                <View
-                  style={{ height: StyleSheet.hairlineWidth, width: '100%', backgroundColor: 'gray' }}
-                />
-              )}
-            />
-          )}
+          <FlatList
+            data={todos}
+            renderItem={renderRow}
+            ItemSeparatorComponent={() => (
+              <View
+                style={{
+                  height: StyleSheet.hairlineWidth,
+                  width: '100%',
+                  backgroundColor: 'gray',
+                }}
+              />
+            )}
+          />
         </View>
       );
 }
