@@ -1,6 +1,6 @@
 import SignOutButton from '@/components/SignOutButton';
 import AppleStyleSwipeableRow from '@/components/SwipeableRow';
-import { Todo, useTodoStore } from '@/features/todos/TodoStore';
+import { Todo, useTodoStore } from '@/features/models/todos/TodoStore';
 import { useSystem } from '@/lib/powersync/powersync_system';
 import { uuid } from '@/lib/powersync/powersync_uuid';
 import { Ionicons } from '@expo/vector-icons';

@@ -3,6 +3,15 @@ import { Schema, Table, column } from '@powersync/react-native';
 export const TODOS_TABLE = 'todos' as const
 export const LISTS_TABLE = 'lists' as const
 
+//To test generate script
+//const tests = new Table({
+//  name: column.text,
+//  owner_id: column.text,
+//});
+
+//export const TESTS_TABLE = 'tests' as const
+//End of test generate script stubs
+
 const todos = new Table({
     description: column.text,
     completed: column.integer,

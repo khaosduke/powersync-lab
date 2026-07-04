@@ -53,7 +53,8 @@
     "@types/react": "~19.2.2",
     "kysely-ctl": "^0.21.0",
     "kysely-supabase": "^0.2.1",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "tsx": "^4.22.5"
   },
   "scripts": {
     "start": "expo start",

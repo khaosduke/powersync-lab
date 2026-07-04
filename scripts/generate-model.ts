@@ -39,7 +39,7 @@ if (!tableInfo) {
   process.exit(1);
 }
 
-const featureDir = path.join(process.cwd(), "src", "features", plural);
+const featureDir = path.join(process.cwd(), "src", "features","models", plural);
 
 if (fs.existsSync(featureDir)) {
   console.error(`Feature '${plural}' already exists.`);
