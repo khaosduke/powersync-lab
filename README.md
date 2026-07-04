@@ -401,6 +401,10 @@ Additional developer tooling can be added over time, such as:
 
 ---
 
+# Development and Templates Notes
+
+The project is based on the popular "todo's" tutorial, for the sake of convenience and to have a working project, that is the model and view chosen here. When adapted, since they are very small models, they can be easily removed and tailored to the needs of the project. In other words, have fun. 
+
 # Contributing
 
 The project intentionally follows strict architectural boundaries.
