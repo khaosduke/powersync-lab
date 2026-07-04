@@ -1,83 +1,371 @@
-# Expo Zustand Auth
+# Expo PowerSync Template
 
-A lightweight authentication starter template for Expo applications using:
+A production-ready Expo template for building **offline-first React Native applications** using modern tooling and a clean, layered architecture.
 
-- Expo
-- React Native
-- Supabase Auth
-- Zustand
-- TypeScript
+## Stack
 
-This project exists because authentication is one of the first hurdles every Expo application encounters, yet most examples are tightly coupled to a specific application.
-
-The goal of this template is to provide a clean, reusable authentication foundation that can be dropped into any Expo project and extended as needed.
-
----
-
-## Features
-
-- Supabase Authentication
-- Zustand as the single source of truth
-- Auth state machine for predictable state transitions
-- Session restoration on cold boot
-- Claims loading support
-- Splash screen driven by auth state
-- Minimal boilerplate
-- TypeScript support
-- Expo Router compatible
+- ⚡ Expo
+- 🔐 Supabase Authentication
+- 🔄 PowerSync
+- 🗄️ Kysely
+- 🧠 Zustand
+- 📱 Expo Router
+- 🟦 TypeScript
 
 ---
 
-## Philosophy
+# Philosophy
 
-Instead of scattering authentication state across components, contexts, hooks, and effects, this template centralizes auth into a Zustand store.
+This template was built around a few simple ideas:
 
-The application responds to authentication state changes and updates the store accordingly.
+- Authentication should be isolated.
+- Persistence should be isolated.
+- UI should not know SQL.
+- PowerSync should be the source of truth.
+- Zustand should manage application state—not duplicate the database.
+- Boilerplate should be generated whenever possible.
 
-UI should react to the store.
-
-This creates a predictable authentication flow and eliminates many common race conditions that occur during startup.
+The result is an architecture that scales well while remaining easy to understand.
 
 ---
 
-## Authentication State Machine
+# Features
 
-The auth store transitions through several states:
+- ✅ Expo Router
+- ✅ Supabase Authentication
+- ✅ Offline-first PowerSync synchronization
+- ✅ Local SQLite database
+- ✅ Kysely query builder
+- ✅ Zustand state management
+- ✅ Feature-oriented architecture
+- ✅ Automatic model scaffolding
+- ✅ Strong separation of concerns
+
+---
+
+# Architecture
+
+## Authentication
+
+Authentication is completely isolated from the rest of the application.
 
 ```text
-booting
-    ↓
-loadingClaims
-    ↓
-signedOut
-    OR
-signedInNoClaims
-    OR
-signedInReady
-    OR
-error
+AuthProvider
+      │
+      ▼
+Auth Engine
+      │
+      ▼
+Zustand Auth Store
+      │
+      ▼
+Application
 ```
 
-### States
+The authentication engine is responsible for:
 
-| State | Description |
-|---------|-------------|
-| booting | Initial application startup |
-| loadingClaims | Session found, claims loading |
-| signedOut | User not authenticated |
-| signedInNoClaims | User authenticated but claims unavailable |
-| signedInReady | User authenticated and ready |
-| error | Authentication failure |
+- Restoring sessions
+- Listening for authentication changes
+- Loading claims
+- Updating the Zustand store
+
+Screens never communicate directly with Supabase Authentication.
 
 ---
 
-## Installation
+## PowerSync
+
+PowerSync owns local persistence and synchronization.
+
+```text
+PowerSync
+      │
+      ▼
+SQLite
+      │
+      ▼
+Kysely
+```
+
+A singleton `System` owns:
+
+- PowerSync database
+- Kysely instance
+- Supabase connector
+
+React components access the system using:
+
+```ts
+const system = useSystem();
+```
+
+Non-React code should import the singleton directly:
+
+```ts
+import { system } from "@/lib/powersync/powersync_system";
+```
+
+This keeps repositories independent of React while avoiding violations of the Rules of Hooks.
+
+---
+
+# Project Structure
+
+```text
+src/
+
+    app/
+
+    components/
+
+    providers/
+
+        AuthProvider.tsx
+        PowerSyncProvider.tsx
+
+    lib/
+
+        auth/
+
+        powersync/
+
+            powersync_system.ts
+            powersync_app_schema.ts
+            powersync_supabase_connector.ts
+
+    features/
+
+        auth/
+
+        models/
+
+            todos/
+
+                TodoRepo.ts
+                TodoStore.ts
+
+            lists/
+
+                ListRepo.ts
+                ListStore.ts
+```
+
+---
+
+# Model Architecture
+
+Every persisted model follows the same structure.
+
+```text
+features/models/<model>/
+
+    ModelRepo.ts
+    ModelStore.ts
+```
+
+Example:
+
+```text
+features/models/todos/
+
+    TodoRepo.ts
+    TodoStore.ts
+```
+
+---
+
+## Repository Layer
+
+Repositories own **database access only**.
+
+Responsibilities:
+
+- Read
+- Create
+- Update
+- Delete
+
+Repositories should **not** contain:
+
+- React
+- Zustand
+- Navigation
+- UI logic
+- Screen logic
+
+```text
+Repository
+      │
+      ▼
+PowerSync
+      │
+      ▼
+SQLite
+```
+
+---
+
+## Zustand Store
+
+Stores own **application state**.
+
+Responsibilities:
+
+- Loading state
+- Error state
+- Current working set
+- Calling repository methods
+
+Stores should **never** own persistence.
+
+---
+
+## Screens
+
+Screens should remain as thin as possible.
+
+Their responsibilities are simply to:
+
+- Display state
+- Dispatch actions
+
+Screens should never contain SQL.
+
+---
+
+# Working Set Philosophy
+
+PowerSync is the **complete local database**.
+
+Zustand is **not**.
+
+Instead, Zustand represents only the application's **current working set**.
+
+```text
+PowerSync
+
+20,000 rows
+
+      │
+
+Repository
+
+query
+
+      │
+
+Zustand
+
+Current page
+10 rows
+
+Selected item
+1 row
+
+Loading state
+Error state
+Filters
+```
+
+This keeps memory usage low while allowing PowerSync to remain the application's source of truth.
+
+For simplicity, this template may temporarily load an entire table.
+
+Production applications should instead prefer:
+
+- Pagination
+- Filtered queries
+- Querying individual records
+- Bounded working sets
+
+---
+
+# Data Flow
+
+Application dependencies always flow downward.
+
+```text
+Screen
+
+      │
+
+Zustand Store
+
+      │
+
+Repository
+
+      │
+
+PowerSync / Kysely
+
+      │
+
+SQLite
+```
+
+---
+
+# Model Generator
+
+This template includes a TypeScript model generator.
+
+Generate a new model:
+
+```bash
+npm run generate:model todo
+```
+
+Example output:
+
+```text
+src/
+
+    features/
+
+        models/
+
+            todos/
+
+                TodoRepo.ts
+
+                TodoStore.ts
+```
+
+The generator reads directly from:
+
+```text
+src/lib/powersync/powersync_app_schema.ts
+```
+
+Example schema:
+
+```ts
+const todos = new Table({
+    description: column.text,
+    completed: column.integer,
+    completed_by: column.text,
+    created_by: column.text,
+    list_id: column.text
+});
+```
+
+From that definition the generator creates:
+
+- Repository
+- Zustand Store
+- Matching TypeScript interface
+
+This keeps every model consistent throughout the project.
+
+---
+
+# Installation
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/khaosduke/expo-zustand-auth.git
-cd expo-zustand-auth
+git clone <repo-url>
 ```
 
 Install dependencies:
@@ -86,196 +374,57 @@ Install dependencies:
 npm install
 ```
 
-or
+Start Expo:
 
 ```bash
-pnpm install
+npm start
 ```
 
-or
+---
+
+# Development
+
+The project includes TypeScript development scripts powered by **tsx**.
+
+Example:
 
 ```bash
-yarn
+npm run generate:model todo
 ```
 
----
+Additional developer tooling can be added over time, such as:
 
-## Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
-
-These values can be found in your Supabase Dashboard:
-
-```text
-Project Settings
-    → API
-```
-
-### Important
-
-The application will not function without valid Supabase credentials.
-
-Do not commit service role keys or other sensitive credentials.
-
-Only the public project URL and anonymous key should be used in an Expo client application.
+- Schema verification
+- Synchronization verification
+- Seed generation
+- Migration helpers
 
 ---
 
-## Supabase Setup
+# Contributing
 
-1. Create a Supabase project.
-2. Navigate to:
+The project intentionally follows strict architectural boundaries.
 
-```text
-Authentication
-    → Providers
-```
+When adding a new model:
 
-3. Enable the authentication providers you want to support.
-4. Copy your Project URL and Anon Key.
-5. Add them to your `.env` file.
+1. Define the PowerSync table.
+2. Run the model generator.
+3. Implement repository CRUD.
+4. Implement store workflows.
+5. Keep screens free of persistence logic.
 
----
-
-## Running the App
-
-Start the Expo development server:
-
-```bash
-npx expo start
-```
-
-Run Android:
-
-```bash
-npx expo run:android
-```
-
-Run iOS:
-
-```bash
-npx expo run:ios
-```
+Following this pattern keeps the codebase consistent and easy to maintain.
 
 ---
 
-## Project Structure
-
-```text
-src/
-├── features/
-│   └── auth/
-│       ├── AuthStore.ts
-│       ├── AuthEngine.ts
-│       └── ...
-│
-├── providers/
-│   └── AuthProvider.tsx
-│
-├── lib/
-│   └── supabase.ts
-│
-└── app/
-    └── routes...
-```
-
----
-
-## Auth Flow
-
-1. Application starts
-2. AuthProvider initializes
-3. Existing Supabase session is restored
-4. Zustand store enters `loadingClaims`
-5. Claims are fetched
-6. Store transitions to:
-   - `signedInReady`
-   - `signedInNoClaims`
-   - `signedOut`
-   - `error`
-7. UI renders based on auth state
-
----
-
-## Why Zustand?
-
-Zustand provides:
-
-- Minimal boilerplate
-- Simple API
-- Excellent TypeScript support
-- No reducers
-- No actions files
-- Easy testing
-- Easy extraction into reusable libraries
-
-For authentication state, it is often simpler than Redux and more predictable than spreading auth logic across multiple React Context providers.
-
----
-
-## Extending the Template
-
-Common additions include:
-
-- Role-based authorization
-- User profile management
-- Organization support
-- Multi-tenant applications
-- OAuth providers
-- Password reset flows
-- Offline persistence
-- Feature flags
-- Analytics
-- Audit logging
-
----
-
-## Intended Use
-
-This repository is intended as a reusable authentication foundation.
-
-Start here, verify authentication works, then build application-specific features on top.
-
-Potential use cases:
-
-- SaaS applications
-- Internal tools
-- Mobile applications
-- EMS software
-- Inventory systems
-- CRM platforms
-- Field service applications
-
----
-
-## Contributing
-
-Pull requests are welcome.
-
-If you discover a bug, have a suggestion, or want to improve the template, please open an issue.
-
----
-
-## Author
-
-**Wilfredo Crespo**
-
-Paramedic, software developer, and creator of Expo Zustand Auth.
-
-GitHub: https://github.com/khaosduke
-
----
-
-## License
+# License
 
 MIT
 
-NOTES
-Now requires, kysely, kysely-ctl as a dep
+---
 
-For database kysely owns migrations and seeds. 
+# Author
+
+## Wilfredo Crespo
+
+*Programmer. Paramedic. Building software to solve real-world problems through practical engineering and thoughtful design.*
