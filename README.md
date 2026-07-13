@@ -1360,6 +1360,9 @@ Avoid introducing:
 Pull requests, bug reports, and architectural improvements are welcome.
 
 ---
+## Misc Notes
+The seeds and migrations may not be absolutely correct, conceptually, the seeds should be static data and migrations get introduced and changed as the project continues. You will notice there is no take down for each migration, this is merely a template to get you started and for any production app you should fill in the missing pieces appropriately. Happy hacking. 
+___
 
 ## License
 
