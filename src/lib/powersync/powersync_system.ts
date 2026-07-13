@@ -11,6 +11,9 @@ export class System {
     powersync: PowerSyncDatabase;
     db: Kysely<Database>;;
 
+    private initPromise: Promise<void> | null = null;
+
+
     constructor() {
         this.powersync = new PowerSyncDatabase({
             schema: AppSchema,
@@ -23,7 +26,16 @@ export class System {
         this.db = wrapPowerSyncWithKysely(this.powersync) as unknown as Kysely<Database>;
     }
 
-    async init() {
+    init(): Promise<void> {
+        if (!this.initPromise) {
+        this.initPromise = this.initialize();
+        }
+
+        return this.initPromise;
+  }
+
+
+    private async initialize() {
         await this.powersync.init();
         await this.powersync.connect(this.supabaseConnector);
     }
